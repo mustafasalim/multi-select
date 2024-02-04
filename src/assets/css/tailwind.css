@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+html{
+    font-family: "Noto Sans", sans-serif;
+}
+@layer utilities {
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 20px;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #FAFAFA;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #C1C1C1;
+      border-radius: 20px;
+      border: 3px solid #FAFAFA;
+    }
+  
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #afafaf;
+    }
+  }
