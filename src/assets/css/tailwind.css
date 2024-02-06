@@ -6,7 +6,7 @@
 
 
 html{
-    font-family: "Noto Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 @layer utilities {
     .custom-scrollbar::-webkit-scrollbar {
@@ -14,8 +14,8 @@ html{
     }
   
     .custom-scrollbar::-webkit-scrollbar-track {
-      background: #FAFAFA;
-      display: none !important;
+      background: #ffffff00;
+      
     }
   
     .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -28,3 +28,5 @@ html{
       background: #afafaf;
     }
   }
+  
+
