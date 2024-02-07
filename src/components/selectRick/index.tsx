@@ -3,23 +3,33 @@ import { TiArrowSortedUp } from "react-icons/ti"
 import { IoMdClose } from "react-icons/io"
 import { motion } from "framer-motion"
 
-function SelectUsers(props: any) {
+interface MultiSelectProps {
+  label: any
+  data: any
+  placholder: string
+  searchValue: any
+  onSearchChange: any
+}
+function MultiSelect({
+  label,
+  data,
+  placholder,
+  searchValue,
+  onSearchChange,
+}: MultiSelectProps) {
   //veri tabanından kullanıcı bilgilerini getirir
-  const { data } = props
-
-  // Seçilen kullanıcıların verilerini saklamak için bir durum tanımla
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([])
+  const userData = data
 
   // Kullanıcıyı seçme işlemi
   const handleUserSelect = (user: any) => {
     // Eğer kullanıcı zaten seçili ise listeden çıkar
-    if (selectedUsers.some((selectedUser) => selectedUser.id === user.id)) {
-      setSelectedUsers(
-        selectedUsers.filter((selectedUser) => selectedUser.id !== user.id)
+    if (searchValue.some((selectedUser: any) => selectedUser.id === user.id)) {
+      onSearchChange(
+        searchValue.filter((selectedUser: any) => selectedUser.id !== user.id)
       )
     } else {
       // Değilse listeye ekle
-      setSelectedUsers([...selectedUsers, user])
+      onSearchChange([...searchValue, user])
     }
   }
 
@@ -50,26 +60,26 @@ function SelectUsers(props: any) {
     }
   }, [])
 
-  console.log(arrow)
-
-  console.log(selectedUsers)
-
   return (
     <div
       ref={containerRef}
-      className="grid gap-y-6"
+      className="grid gap-y-2"
     >
+      <div className="text-[16px] font-semibold text-[#475569]">{label}</div>
       <div
         onClick={handleArrow}
-        className=" min-h-[66px]  relative flex rounded-2xl border-2 p-2 border-[#a7b7cc] shadow-lg"
+        className="w-[500px] min-h-[66px]  relative rounded-2xl border-2 p-2 border-[#a7b7cc] shadow-lg"
       >
         <div className="  flex items-center gap-y-2 flex-wrap max-w-[500px]  gap-x-2 ">
-          {selectedUsers.map((user: any) => (
+          {searchValue.map((user: any) => (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 2 }}
             >
-              <div className="flex justify-between items-center gap-x-2 px-4 p-2 rounded-2xl bg-[#E2E8F0]">
+              <div
+                onClick={(event) => event.stopPropagation()}
+                className="flex justify-between items-center gap-x-2 px-4 p-2 rounded-2xl bg-[#E2E8F0]"
+              >
                 <span className="text-[#475569] font-semibold">
                   {user.name}
                 </span>
@@ -84,9 +94,9 @@ function SelectUsers(props: any) {
           ))}
         </div>
         <input
-          placeholder={selectedUsers.length > 0 ? "" : "select users"}
+          placeholder={placholder}
           onClick={handleArrow}
-          className="h-full rounded-xl px-4 overflow-hidden  outline-none "
+          className="w-full mt-3 rounded-xl px-4 overflow-hidden  outline-none "
           type="text"
         />
 
@@ -108,7 +118,7 @@ function SelectUsers(props: any) {
               <div>fwafw</div>
             ) : (
               <>
-                {data.results.map((user: any, idx: any) => (
+                {userData.results.map((user: any, idx: any) => (
                   <div
                     onClick={() => handleUserSelect(user)}
                     key={idx}
@@ -119,8 +129,8 @@ function SelectUsers(props: any) {
                       type="checkbox"
                       // Checkbox'un durumunu checked prop ile kontrol et
                       // Eğer kullanıcı seçili ise, true dönecek
-                      checked={selectedUsers.some(
-                        (selectedUser) => selectedUser.id === user.id
+                      checked={searchValue.some(
+                        (selectedUser: any) => selectedUser.id === user.id
                       )}
                       // Checkbox'a tıklandığında ilgili kullanıcı nesnesini seçme fonksiyonuna gönder
                       onChange={() => handleUserSelect(user)}
@@ -151,4 +161,4 @@ function SelectUsers(props: any) {
   )
 }
 
-export default SelectUsers
+export default MultiSelect

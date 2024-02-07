@@ -1,5 +1,5 @@
-import { useEffect } from "react"
-import SelectUsers from "./components/selectRick"
+import { useEffect, useState } from "react"
+import MultiSelect from "./components/selectRick"
 import { fetchUserData } from "./store/data"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch } from "./store"
@@ -10,17 +10,21 @@ function App() {
   useEffect(() => {
     dispatch(fetchUserData())
   }, [dispatch])
-  const data = useSelector((state: RootState) => state.dataContext.data)
 
+  // user data içeriği
+  const data = useSelector((state: RootState) => state.dataContext.data)
+  // Seçilen kullanıcıların verilerini saklamak için bir state oluştur
+  const [selectedUsers, setSelectedUsers] = useState<any[]>([])
   return (
     <>
       <section className="flex items-center justify-center mt-56">
-        <div className="grid gap-y-4 ">
-          <div className="text-center font-semibold text-[#475569]">
-            Multiple selection, selecting from existing items.
-          </div>
-          <SelectUsers data={data} />
-        </div>
+        <MultiSelect
+          label="Select domato,patoto ...."
+          data={data}
+          placholder="Search hupplies"
+          searchValue={selectedUsers}
+          onSearchChange={setSelectedUsers}
+        />
       </section>
     </>
   )

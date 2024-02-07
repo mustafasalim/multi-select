@@ -3,8 +3,6 @@
 @tailwind utilities;
 
 
-
-
 html{
   font-family: "Poppins", sans-serif;
 }
@@ -12,12 +10,6 @@ html{
     .custom-scrollbar::-webkit-scrollbar {
       width: 20px;
     }
-  
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #ffffff00;
-      
-    }
-  
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background-color: #C1C1C1;
       border-radius: 20px;
