@@ -13,14 +13,16 @@ function App() {
 
   // user data içeriği
   const data = useSelector((state: RootState) => state.dataContext.data)
+
   // Seçilen kullanıcıların verilerini saklamak için bir state oluştur
   const [selectedUsers, setSelectedUsers] = useState<any[]>([])
   return (
     <>
-      <section className="flex items-center justify-center mt-56">
+      <section className="flex items-center justify-center mt-24">
         <MultiSelect
-          label="Select domato,patoto ...."
+          label="Selected users"
           data={data}
+          maxSelectedValues={3}
           placholder="Search hupplies"
           searchValue={selectedUsers}
           onSearchChange={setSelectedUsers}

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit"
 import dataContext from "./data"
+import searchSlice from "./search"
 
 export const store = configureStore({
   reducer: {
     dataContext,
+    searchSlice,
   },
 })
 
