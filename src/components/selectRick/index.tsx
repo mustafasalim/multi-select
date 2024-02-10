@@ -22,54 +22,11 @@ function MultiSelect({
   onSearchChange,
   maxSelectedValues,
 }: MultiSelectProps) {
-  //sends the value in the input to the search stat
-  const handleSearchChange = (event: any) => {
-    dispatch(_searchContext(event.target.value.toLowerCase().trim()))
-  }
-
-  //retrieves the current search value
-  const dispatch = useDispatch<AppDispatch>()
-  const search = useSelector((state: any) => state.searchSlice.value)
-
-  //filters the search value with data
-  const handleSearch =
-    data.results &&
-    data.results.filter((item: any) => {
-      return search.toLowerCase === ""
-        ? item
-        : item.name.toLowerCase().includes(search)
-    })
-
-  //updates selected data
+  const [arrow, setArrow] = useState(false)
   const [maxValue, setMaxValue] = useState(false)
-  const handleUserSelect = (user: any) => {
-    if (searchValue.some((selectedUser: any) => selectedUser.id === user.id)) {
-      onSearchChange(
-        searchValue.filter((selectedUser: any) => selectedUser.id !== user.id)
-      )
-    } else if (searchValue.length < maxSelectedValues) {
-      // Değilse listeye ekle
-      onSearchChange([...searchValue, user])
-    } else {
-      searchValue.length < maxSelectedValues
-      setMaxValue(true)
-      setTimeout(() => {
-        setMaxValue(false)
-      }, 2000)
-    }
-  }
-  console.log(maxValue)
-  console.log("items", searchValue)
 
   //multiselect on/off operation
-  const [arrow, setArrow] = useState(false)
-  const handleArrow = () => {
-    if (arrow === false) {
-      setArrow(true)
-    } else {
-      setArrow(false)
-    }
-  }
+  const handleArrow = () => setArrow((prevArrow) => !prevArrow)
 
   //function that works when clicked outside the box
   const containerRef = useRef<HTMLDivElement>(null)
@@ -87,6 +44,57 @@ function MultiSelect({
       document.removeEventListener("click", handleClick)
     }
   }, [])
+  //sends the value in the input to the search state
+  const handleSearchChange = (event: any) => {
+    dispatch(
+      _searchContext(
+        event.target.value.toLowerCase().trim().replace(/\s+/g, " ")
+      )
+    )
+  }
+
+  //retrieves the current search value
+  const dispatch = useDispatch<AppDispatch>()
+  const search = useSelector((state: any) => state.searchSlice.value)
+
+  //filters the search value with data
+  const handleSearch =
+    data &&
+    data.filter((item: any) => {
+      return search.toLowerCase() === ""
+        ? item
+        : item.name.toLowerCase().includes(search)
+    })
+
+  //it goes through the values in the array returned from the filtering process one by one and if there is a match with the value in the input, it makes that value bold, otherwise it returns normal
+  const renderHighlightedText = (user: any) => {
+    const parts = user && user.name.split(new RegExp(`(${search})`, "gi"))
+    return parts.map((part: any, index: any) =>
+      part.toLowerCase() === search.toLowerCase() ? (
+        <strong key={index}>{part}</strong>
+      ) : (
+        part
+      )
+    )
+  }
+
+  //updates selected data
+  const handleUserSelect = (user: any) => {
+    if (searchValue.some((selectedUser: any) => selectedUser.id === user.id)) {
+      onSearchChange(
+        searchValue.filter((selectedUser: any) => selectedUser.id !== user.id)
+      )
+    } else if (searchValue.length < maxSelectedValues) {
+      // Değilse listeye ekle
+      onSearchChange([...searchValue, user])
+    } else {
+      searchValue.length < maxSelectedValues
+      setMaxValue(true)
+      setTimeout(() => {
+        setMaxValue(false)
+      }, 2000)
+    }
+  }
 
   return (
     <div
@@ -143,74 +151,79 @@ function MultiSelect({
 
         <TiArrowSortedUp
           onClick={handleArrow}
-          className={` h-full  absolute top-0 right-0   transform-gpu mr-2 transition-all duration-300 w-6 ${
+          className={` h-full  absolute top-0 right-0 transform-gpu mr-2 transition-all duration-300 w-6 ${
             arrow === true && "rotate-180"
           } text-[#475569] cursor-pointer`}
         />
       </div>
-
-      {arrow === true && (
-        //data section
-        <motion.div
-          initial={{ opacity: -1 }}
-          animate={{ opacity: 2 }}
-        >
-          <div className=" overflow-hidden ease-in-out rounded-s-2xl  h-[500px] border-2 overflow-y-scroll transition-all custom-scrollbar border-[#a7b7cc]">
-            {data.length === 0 ? (
-              <div>fwafw</div>
-            ) : (
-              <>
-                {handleSearch.length === 0 && (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="text-[18px] text-[#475569] font-semibold">
-                      No Data
+      <div>
+        {arrow === true && (
+          //data section
+          <motion.div
+            initial={{ opacity: -1 }}
+            animate={{ opacity: 2 }}
+          >
+            <div className=" overflow-hidden ease-in-out rounded-s-2xl  h-[500px] border-2 overflow-y-scroll transition-all custom-scrollbar border-[#a7b7cc]">
+              {data.length === 0 ? (
+                <div>fwafw</div>
+              ) : (
+                <>
+                  {handleSearch.length === 0 && (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="w-[500px] text-center text-[18px] text-[#475569] font-semibold">
+                        "{search}" We couldn't find anything like that.
+                      </div>
                     </div>
-                  </div>
-                )}
-                {handleSearch.map((user: any, idx: any) => (
-                  <div
-                    onClick={() => handleUserSelect(user)}
-                    key={idx}
-                    className="flex cursor-pointer p-2 gap-x-3 border-b-2 bg-[#fcfdfd] border-[#a7b7cc]"
-                  >
-                    <input
-                      className="cursor-pointer ease-out transition-all z-10 w-4 accent-blue-500  outline-[#a7b7cc] outline-2 pointer-events-auto"
-                      type="checkbox"
-                      // Checkbox'un durumunu checked prop ile kontrol et
-                      // Eğer kullanıcı seçili ise, true dönecek
-                      checked={searchValue.some(
-                        (selectedUser: any) => selectedUser.id === user.id
-                      )}
-                      // Checkbox'a tıklandığında ilgili kullanıcı nesnesini seçme fonksiyonuna gönder
-                      onChange={() => handleUserSelect(user)}
-                    />
-                    <div className="w-12 h-12 rounded-md overflow-hidden">
-                      <img
-                        className="object-cover"
-                        src={user.image}
-                        alt=""
-                      />
-                    </div>
-                    <div className="grid">
+                  )}
+                  {handleSearch.map((user: any, idx: any) => {
+                    return (
                       <div
-                        className={`text-[17px] text-[#475569] font-semibold ${
-                          search === user.name ? "font-bold" : ""
-                        }`}
+                        onClick={() => handleUserSelect(user)}
+                        key={idx}
+                        className="flex cursor-pointer p-2 gap-x-3 border-b-2 bg-[#fcfdfd] border-[#a7b7cc]"
                       >
-                        {handleSearch.length > 0 && user.name}
-                      </div>
+                        <input
+                          className="cursor-pointer ease-out transition-all z-10 w-4 accent-blue-500  outline-[#a7b7cc] outline-2 pointer-events-auto"
+                          type="checkbox"
+                          // Checkbox'un durumunu checked prop ile kontrol et
+                          // Eğer kullanıcı seçili ise, true dönecek
+                          checked={searchValue.some(
+                            (selectedUser: any) => selectedUser.id === user.id
+                          )}
+                          // Checkbox'a tıklandığında ilgili kullanıcı nesnesini seçme fonksiyonuna gönder
+                          onChange={() => handleUserSelect(user)}
+                        />
+                        <div className="w-12 h-12 rounded-md overflow-hidden">
+                          <img
+                            className="object-cover"
+                            src={user.image}
+                            alt=""
+                          />
+                        </div>
+                        <div className="grid">
+                          <div
+                            key={idx}
+                            className={`text-[17px] text-[#475569] font-semibold`}
+                          >
+                            {handleSearch.length > 0 &&
+                              renderHighlightedText(user)}
+                          </div>
 
-                      <div className="text-[15px] text-[#808da0] font-semibold">
-                        {user.episode ? user.episode.length + "episode" : ""}
+                          <div className="text-[15px] text-[#808da0] font-semibold">
+                            {user.episode
+                              ? user.episode.length + " " + "episode"
+                              : ""}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-        </motion.div>
-      )}
+                    )
+                  })}
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </div>
     </div>
   )
 }

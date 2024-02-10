@@ -11,10 +11,10 @@ function App() {
     dispatch(fetchUserData())
   }, [dispatch])
 
-  // user data içeriği
-  const data = useSelector((state: RootState) => state.dataContext.data)
+  // user data
+  const data = useSelector((state: RootState) => state.dataContext.data.results)
 
-  // Seçilen kullanıcıların verilerini saklamak için bir state oluştur
+  // Create a state to store data of selected users
   const [selectedUsers, setSelectedUsers] = useState<any[]>([])
   return (
     <>
@@ -22,7 +22,7 @@ function App() {
         <MultiSelect
           label="Selected users"
           data={data}
-          maxSelectedValues={3}
+          maxSelectedValues={50}
           placholder="Search hupplies"
           searchValue={selectedUsers}
           onSearchChange={setSelectedUsers}
